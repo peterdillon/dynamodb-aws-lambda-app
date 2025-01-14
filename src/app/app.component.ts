@@ -30,7 +30,7 @@ export interface Data {
 
 export class AppComponent {
 
-  title = 'AWS, Lambda, Api Gateway, DynamoDB, Angular';
+  title = 'Amplify, Lambda, Api Gateway, DynamoDB, Angular';
   data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
