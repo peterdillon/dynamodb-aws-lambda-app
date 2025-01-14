@@ -6,6 +6,17 @@
     ));
 }
 
+.user-ct {
+    position: absolute;
+    top: .5rem;
+    right: .4rem;
+    color: black;
+    button {
+        // color: black !important;
+        background-color: rgba(black, .5)
+    }
+}
+
 .icon-color {
     color: black;
 }
@@ -18,7 +29,7 @@ body {
 .butt-row {
     z-index: 1;
     top: 2rem;
-    right: .25rem;
+    margin-left: 60%;
     position: absolute;
 }
 .row {

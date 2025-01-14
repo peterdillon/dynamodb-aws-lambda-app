@@ -14,6 +14,13 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
+import { Router } from '@angular/router';
+
+import { Hub } from '@aws-amplify/core';
+import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
+import { Amplify } from "aws-amplify";
+import outputs from '../../amplify_outputs.json';
+Amplify.configure(outputs);
 
 export interface Data {
   id: string;
@@ -23,7 +30,7 @@ export interface Data {
 
 @Component({
   selector: 'app-root',
-  imports: [MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  imports: [AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -34,19 +41,37 @@ export class AppComponent {
   data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
+  authenticated : boolean = false;
   
   constructor( 
     private dbService: DynamoDBService,
-    private fb: FormBuilder ) { }
+    private fb: FormBuilder,
+    private router: Router ) {
+
+      Hub.listen('auth', (data) => {
+        switch (data.payload.event) {
+          case 'signedIn':
+          data.payload.event === "signedIn"
+            ?  this.authenticated = true
+            : this.authenticated = false;
+            break;
+        }});
+     }
+
     
 
   ngOnInit() {
-    this.initForm();
+    this.initEditForm();
     this.initDeleteForm();
     this.getData();
    }
 
-   initForm() {
+   signOut() {
+    console.log(this.authenticated);
+    this.authenticated = false;
+   }
+
+   initEditForm() {
     this.createProductForm = this.fb.group({
       name: [''],
       id: [''],
