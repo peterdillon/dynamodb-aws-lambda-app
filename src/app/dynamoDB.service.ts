@@ -20,6 +20,14 @@ export class DynamoDBService {
     return this.http.get(this.url);
   }
 
+  deleteData(id: string) {
+    const body = {id: id};
+    console.log(id)
+    this.http.delete(this.url+'/'+id, this.httpOptions)
+        .subscribe(res => console.log(res));
+  }
+
+
   saveData(id: string, price: string, name: string) {
     const body = {id: id, price: price, name: name};
     this.http.put(this.url, body, this.httpOptions)

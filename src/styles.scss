@@ -1,4 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+:root {
+    @include mat.toolbar-overrides((
+      container-background-color: var(--mat-sys-primary),
+      container-text-color: black,
+    ));
+}
+// html {
+//     @include mat.theme((
+//       color: mat.$violet-palette,
+//       typography: Roboto,
+//       density: -2,
+//     ));
+//   }
+.icon-color {
+    color: black;
+}
+body {
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);  
+    margin: 0;
+    font-family: Roboto;
+}
+.butt-row {
+    z-index: 1;
+    top: 2rem;
+    right: .25rem;
+    position: absolute;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 1rem;;
+  }
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    padding-left: 1rem;
+    h2 {
+        margin-bottom: .5rem;
+    }
+}
+.mat-mdc-card {
+    margin: 1rem 1.3rem 0 0;
+    border: 1px solid #666 !important;
+    &:first-of-type {
+        margin-top: 0;
+    }
+}
+.mat-mdc-form-field {
+    margin: 0 .5rem;
+}
+button {
+    margin: .25rem;
+}
+.delete {
+    background-color: #993300 !important;
+    color: white !important;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+

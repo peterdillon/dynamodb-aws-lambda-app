@@ -1,32 +1,90 @@
-<main class="main">
-  <div class="content">
+<mat-toolbar color="secondary">
+  <mat-toolbar-row>
+    <button 
+      mat-icon-button 
+      aria-label=""
+      [matMenuTriggerFor]="menu" 
+      #menuTrigger="matMenuTrigger" 
+      (click)="menuTrigger.openMenu()">
+      <mat-icon class="icon-color">menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <a mat-menu-item routerLink="/home">
+        <mat-icon>home</mat-icon> Home
+      </a>
+      <a mat-menu-item routerLink="/view-product">
+        <mat-icon>edit_circle</mat-icon> View/Edit Products
+      </a>
+      <a mat-menu-item routerLink="/create-product">
+        <mat-icon>add_circle</mat-icon> Create Product
+      </a>
+    </mat-menu>
+    <span>{{ title }}</span>
+  </mat-toolbar-row>
+</mat-toolbar>
 
-    <div class="left-side">
-      <h3>Hello, {{ title }}</h3>
-      <p>Congratulations! Your app is running. 🎉</p>
-      <p><button (click)="getData()">get data</button></p>
-      <p *ngFor="let d of data()"> ID: {{d.id}} - Name: {{ d.name }} - Price: {{ d.price }}</p>
+
+  <div class="row">
+    <div class="column">
+      <h2>Add/Edit Item</h2>
+      <div class="blue-column">
+        <form [formGroup]="createProductForm">
+          <mat-form-field appearance="fill">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" formControlName="id">
+          </mat-form-field>
+    
+          <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Name" formControlName="name">
+          </mat-form-field>
+    
+          <mat-form-field appearance="fill">
+            <mat-label>Price</mat-label>
+            <input matInput placeholder="Price" formControlName="price">
+          </mat-form-field>
+            <button (click)="saveItem()" mat-flat-button>Add Item</button>
+          </form>
+
+          <mat-divider></mat-divider>
+
+          <h2>Delete Item</h2>
+          <form [formGroup]="deleteProductForm">
+            <mat-form-field appearance="fill">
+              <mat-label>ID</mat-label>
+              <input matInput placeholder="ID" formControlName="id">
+            </mat-form-field>
+              <button class="delete" (click)="deleteItem()" mat-flat-button>Delete Item</button>
+            </form>
+
+
+      </div>
     </div>
 
-    <div class="divider" role="separator" aria-label="Divider"></div>
-
-    <div class="right-side">
-      <form [formGroup]="createProductForm">
-        <p>
-          <label>ID</label>
-          <input formControlName="id">
-        </p>
-        <p>
-          <label>Name</label>
-          <input formControlName="name">
-        </p>
-        <p>
-          <label>Price</label>
-          <input formControlName="price">
-        </p>
-        <p><button (click)="saveNewItem()">update DB</button></p>
-        </form>
+    <div class="butt-row">
+      <button (click)="getData()" mat-fab extended aria-label="refresh">
+        <mat-icon>refresh</mat-icon>
+        Refresh Data
+      </button>
     </div>
 
+    <div class="column right-column">
+      
+
+     
+        <mat-card *ngFor="let d of data()">
+          <mat-card-content>
+            <mat-card-subtitle> Name: {{ d.name }}</mat-card-subtitle>
+            <mat-card-subtitle>Price: {{ d.price }}</mat-card-subtitle>
+            <mat-card-subtitle>ID: {{d.id}}</mat-card-subtitle>
+          </mat-card-content>
+        </mat-card>
+      
+    </div>
   </div>
-</main>
+
+
+
+
+
+        
