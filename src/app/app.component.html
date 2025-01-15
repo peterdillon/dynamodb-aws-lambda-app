@@ -30,7 +30,7 @@
     let-user="user"
     let-signOut="signOut">
     <div class="user-ct">
-      Welcome {{ user.username | slice:0:6 }}! 
+      Welcome {{ user.username | slice:0:4 }}... 
       <button mat-button (click)="signOut()">Sign Out</button>
     </div>
   </ng-template>
