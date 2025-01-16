@@ -37,11 +37,11 @@ export interface Data {
 
 export class AppComponent {
 
-  title = 'Amplify, Lambda, Api Gateway, DynamoDB, Angular';
+  title = 'Amplify, Angular, Api Gateway, DynamoDB, Lambda';
   data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
-  authenticated : boolean = false;
+  authenticated: boolean = true;
   
   constructor( 
     private dbService: DynamoDBService,
@@ -64,11 +64,13 @@ export class AppComponent {
     this.initEditForm();
     this.initDeleteForm();
     this.getData();
+    console.log(this.authenticated);
    }
 
    signOut() {
     console.log(this.authenticated);
     this.authenticated = false;
+    console.log(this.authenticated);
    }
 
    initEditForm() {

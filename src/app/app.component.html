@@ -24,7 +24,7 @@
 </mat-toolbar>
 <p *ngIf="!authenticated">&nbsp;</p>
 
-<amplify-authenticator>
+<amplify-authenticator *ngIf="!authenticated">
   <ng-template
     amplifySlot="authenticated"
     let-user="user"
@@ -69,7 +69,6 @@
             <button class="delete" (click)="deleteItem()" mat-flat-button>Delete Item</button>
           </form>
 
-
     </div>
   </div>
 
@@ -81,9 +80,6 @@
   </div>
 
   <div class="column right-column">
-    
-
-    
       <mat-card *ngFor="let d of data()">
         <mat-card-content>
           <mat-card-subtitle> Name: {{ d.name }}</mat-card-subtitle>
@@ -91,7 +87,6 @@
           <mat-card-subtitle>ID: {{d.id}}</mat-card-subtitle>
         </mat-card-content>
       </mat-card>
-    
   </div>
 </div>
 
