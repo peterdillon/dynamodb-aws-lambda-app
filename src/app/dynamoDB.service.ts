@@ -22,11 +22,9 @@ export class DynamoDBService {
 
   deleteData(id: string) {
     const body = {id: id};
-    console.log(id)
     this.http.delete(this.url+'/'+id, this.httpOptions)
         .subscribe(res => console.log(res));
   }
-
 
   saveData(id: string, price: string, name: string) {
     const body = {id: id, price: price, name: name};

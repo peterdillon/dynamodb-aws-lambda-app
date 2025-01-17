@@ -3,6 +3,8 @@ import { DynamoDBService } from './dynamoDB.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NavigationStart, Router } from '@angular/router';
+import { LocalStorageService } from './local-storage.service';
 
 import {MatCardModule} from '@angular/material/card';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -14,12 +16,12 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
-import { Router } from '@angular/router';
 
-import { Hub } from '@aws-amplify/core';
+import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { Amplify } from "aws-amplify";
 import outputs from '../../amplify_outputs.json';
+import { Subscription } from 'rxjs';
 Amplify.configure(outputs);
 
 export interface Data {
@@ -42,20 +44,47 @@ export class AppComponent {
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
   authenticated: boolean = false;
+  subscription: Subscription;
   
   constructor( 
     private dbService: DynamoDBService,
     private fb: FormBuilder,
-    private router: Router ) {
+    private router: Router,
+    private localStorageService: LocalStorageService ) {
+
+      this.subscription = router.events.subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          if (!router.navigated) {
+            const auth = this.retrieveFromLocalStorage();
+            if(auth === 'signedIn') {
+              console.log('in router check...');
+              this.authenticated = true;
+              this.getData();
+            } else {
+              this.authenticated = false;
+            }
+            console.log(this.authenticated);
+          }
+        }
+      });
+
 
       Hub.listen('auth', (data) => {
+        console.log(data.payload.event);
+        if (data.payload.event === 'signedIn') {
+          this.authenticated = true;
+        } else if(data.payload.event === 'signedOut') {
+          this.authenticated = false;
+        }
         switch (data.payload.event) {
           case 'signedIn':
-            this.authenticated = true;
+            console.log('user has been signedIn');
+            this.saveToLocalStorage(data.payload.event);
+            this.getData();
             break;
           case 'signedOut':
-            console.log('user have been signedOut successfully.');
-            this.authenticated = false;
+            this.saveToLocalStorage(data.payload.event);
+            console.log('user have been signedOut');
             break;
           case 'tokenRefresh':
             console.log('auth tokens have been refreshed.');
@@ -75,8 +104,25 @@ export class AppComponent {
         }});
      }
 
+    saveToLocalStorage(status: string) {
+      this.localStorageService.saveData('auth', status);
+      if(status === 'signedIn') {
+        this.authenticated = true;
+        console.log(status);
+      }
+    }
+  
+    retrieveFromLocalStorage() {
+      const status = this.localStorageService.getData('auth');
+      console.log('retreiving status: ' + status);
+      if(status === 'signedOut' || null) {
+        this.authenticated = false;
+        console.log(this.authenticated);
+      }
+      return status;
+    }
+
   ngOnInit() {
-    this.getData();
     this.initEditForm();
     this.initDeleteForm();
    }
