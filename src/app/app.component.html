@@ -22,9 +22,9 @@
     <span>{{ title }}</span>
   </mat-toolbar-row>
 </mat-toolbar>
-<p *ngIf="!authenticated">&nbsp;</p>
+<p>&nbsp;</p>
 
-<amplify-authenticator *ngIf="!authenticated">
+<amplify-authenticator>
   <ng-template
     amplifySlot="authenticated"
     let-user="user"

@@ -41,7 +41,7 @@ export class AppComponent {
   data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
-  authenticated: boolean = true;
+  authenticated: boolean = false;
   
   constructor( 
     private dbService: DynamoDBService,
@@ -51,26 +51,34 @@ export class AppComponent {
       Hub.listen('auth', (data) => {
         switch (data.payload.event) {
           case 'signedIn':
-          data.payload.event === "signedIn"
-            ?  this.authenticated = true
-            : this.authenticated = false;
+            this.authenticated = true;
+            break;
+          case 'signedOut':
+            console.log('user have been signedOut successfully.');
+            this.authenticated = false;
+            break;
+          case 'tokenRefresh':
+            console.log('auth tokens have been refreshed.');
+            break;
+          case 'tokenRefresh_failure':
+            console.log('failure while refreshing auth tokens.');
+            break;
+          case 'signInWithRedirect':
+            console.log('signInWithRedirect API has successfully been resolved.');
+            break;
+          case 'signInWithRedirect_failure':
+            console.log('failure while trying to resolve signInWithRedirect API.');
+            break;
+          case 'customOAuthState':
+            console.log('custom state returned from CognitoHosted UI');
             break;
         }});
      }
 
-    
-
   ngOnInit() {
+    this.getData();
     this.initEditForm();
     this.initDeleteForm();
-    this.getData();
-    console.log(this.authenticated);
-   }
-
-   signOut() {
-    console.log(this.authenticated);
-    this.authenticated = false;
-    console.log(this.authenticated);
    }
 
    initEditForm() {
