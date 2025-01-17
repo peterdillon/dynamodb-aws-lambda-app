@@ -57,13 +57,11 @@ export class AppComponent {
           if (!router.navigated) {
             const auth = this.retrieveFromLocalStorage();
             if(auth === 'signedIn') {
-              console.log('in router check...');
               this.authenticated = true;
               this.getData();
             } else {
               this.authenticated = false;
             }
-            console.log(this.authenticated);
           }
         }
       });
@@ -108,16 +106,13 @@ export class AppComponent {
       this.localStorageService.saveData('auth', status);
       if(status === 'signedIn') {
         this.authenticated = true;
-        console.log(status);
       }
     }
   
     retrieveFromLocalStorage() {
       const status = this.localStorageService.getData('auth');
-      console.log('retreiving status: ' + status);
       if(status === 'signedOut' || null) {
         this.authenticated = false;
-        console.log(this.authenticated);
       }
       return status;
     }
