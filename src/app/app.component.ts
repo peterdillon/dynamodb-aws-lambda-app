@@ -102,6 +102,11 @@ export class AppComponent {
         }});
      }
 
+     ngOnInit() {
+      this.initEditForm();
+      this.initDeleteForm();
+     }
+
     saveToLocalStorage(status: string) {
       this.localStorageService.saveData('auth', status);
       if(status === 'signedIn') {
@@ -116,11 +121,6 @@ export class AppComponent {
       }
       return status;
     }
-
-  ngOnInit() {
-    this.initEditForm();
-    this.initDeleteForm();
-   }
 
    initEditForm() {
     this.createProductForm = this.fb.group({

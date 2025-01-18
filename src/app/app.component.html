@@ -29,7 +29,8 @@
     let-user="user"
     let-signOut="signOut">
     <div class="user-ct">
-      Welcome {{ user.username | slice:0:4 }}... 
+      <!-- {{ user.username | slice:0:4 }}&#8230; -->
+       {{user?.signInDetails?.loginId}}
       <button mat-button (click)="signOut()">Sign Out</button>
     </div>
   </ng-template>
