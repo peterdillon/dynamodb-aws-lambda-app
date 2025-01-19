@@ -3,7 +3,7 @@
     "user_pool_id": "us-east-1_dspP48w33",
     "aws_region": "us-east-1",
     "user_pool_client_id": "2k9stfjcl509dqu6td69iuvng8",
-    "identity_pool_id": "us-east-1:80c12b72-5e9d-426e-b25d-e77fb5955925",
+    "identity_pool_id": "us-east-1:db10df0f-8ae8-4d1d-8dc0-16b94d624bd3",
     "mfa_methods": [],
     "standard_required_attributes": [
       "email"
