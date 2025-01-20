@@ -1,12 +1,20 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal,  } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+
+export interface Data {
+  id: string;
+  name: string;
+  price: string;
+};
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class DynamoDBService {
+
+  private data = signal<Data[]>([]);
   url = 'https://eky3iequs9.execute-api.us-east-1.amazonaws.com/items';
   httpOptions = {
     headers: new HttpHeaders({
@@ -16,19 +24,17 @@ export class DynamoDBService {
 
   constructor( private http: HttpClient ) { }
 
-  getData(): Observable<any> {
-    return this.http.get(this.url);
+  getData(): Observable<any[]> {
+    return this.http.get<any[]>(this.url);
   }
 
-  deleteData(id: string) {
-    const body = {id: id};
-    this.http.delete(this.url+'/'+id, this.httpOptions)
-        .subscribe(res => console.log(res));
+  deleteItem(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.url}/${id}`, this.httpOptions);
   }
 
-  saveData(id: string, price: string, name: string) {
-    const body = {id: id, price: price, name: name};
-    this.http.put(this.url, body, this.httpOptions)
-        .subscribe(res => console.log(res));
-  }
+  addEditItem(formValues: any): Observable<any> {
+  const body = {id: formValues.id, price: formValues.price, name: formValues.name};
+  return this.http.put<any>(this.url, body, this.httpOptions);
+}
+
 }
