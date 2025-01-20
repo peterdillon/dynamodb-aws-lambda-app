@@ -34,11 +34,11 @@ Amplify.configure(outputs);
 export class AppComponent {
 
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
-  data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
   authenticated: boolean = false;
   subscription: Subscription;
+  data = signal<Data[]>([]);
   
   constructor( 
     private dbService: DynamoDBService,
@@ -95,10 +95,10 @@ export class AppComponent {
         }});
      }
 
-     ngOnInit() {
+    ngOnInit() {
       this.initEditForm();
       this.getData();
-     }
+    }
 
     saveToLocalStorage(status: string) {
       this.localStorageService.saveData('auth', status);
@@ -124,16 +124,18 @@ export class AppComponent {
   }
 
   addEditItem() {
-  this.dbService.addEditItem(this.createProductForm.value)
-    .subscribe(() => this.getData());
+    this.dbService.addEditItem(this.createProductForm.value)
+      .subscribe(() => this.getData());
   }
 
   deleteItem(id: string) {
-  this.dbService.deleteItem(id).subscribe(() => this.getData());
+    this.dbService.deleteItem(id)
+      .subscribe(() => this.getData());
   }
 
   getData() {
-    this.dbService.getData().subscribe(data => this.data.set(data));
+    this.dbService.getData()
+      .subscribe(data => this.data.set(data));
   }
 
 }

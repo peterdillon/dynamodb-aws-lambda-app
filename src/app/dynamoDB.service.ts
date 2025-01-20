@@ -14,7 +14,6 @@ export interface Data {
 
 export class DynamoDBService {
 
-  private data = signal<Data[]>([]);
   url = 'https://eky3iequs9.execute-api.us-east-1.amazonaws.com/items';
   httpOptions = {
     headers: new HttpHeaders({
@@ -33,8 +32,8 @@ export class DynamoDBService {
   }
 
   addEditItem(formValues: any): Observable<any> {
-  const body = {id: formValues.id, price: formValues.price, name: formValues.name};
-  return this.http.put<any>(this.url, body, this.httpOptions);
-}
+    const body = {id: formValues.id, price: formValues.price, name: formValues.name};
+    return this.http.put<any>(this.url, body, this.httpOptions);
+  }
 
 }
