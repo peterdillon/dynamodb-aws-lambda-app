@@ -29,9 +29,8 @@
     let-user="user"
     let-signOut="signOut">
     <div class="user-ct">
-      <!-- {{ user.username | slice:0:4 }}&#8230; -->
-       {{user?.signInDetails?.loginId}}
-      <button mat-button (click)="signOut()">Sign Out</button>
+       {{ user?.signInDetails?.loginId }}
+      <button mat-button color="primary" (click)="signOut()">Sign Out</button>
     </div>
   </ng-template>
 </amplify-authenticator>
