@@ -29,8 +29,8 @@
     let-user="user"
     let-signOut="signOut">
     <div class="user-ct">
-      Welcome {{ user.username | slice:0:4 }}... 
-      <button mat-button (click)="signOut()">Sign Out</button>
+       {{ user?.signInDetails?.loginId }}
+      <button mat-button color="primary" (click)="signOut()">Sign Out</button>
     </div>
   </ng-template>
 </amplify-authenticator>
@@ -38,7 +38,6 @@
 <div *ngIf="authenticated" class="row">
   <div class="column">
     <h2>Add/Edit Item</h2>
-    <div class="blue-column">
       <form [formGroup]="createProductForm">
         <mat-form-field appearance="fill">
           <mat-label>ID</mat-label>
@@ -54,43 +53,24 @@
           <mat-label>Price</mat-label>
           <input matInput placeholder="Price" formControlName="price">
         </mat-form-field>
-          <button (click)="saveItem()" mat-flat-button>Add Item</button>
+          <button (click)="addEditItem()" mat-flat-button>Add/Edit Item</button>
         </form>
-
         <mat-divider></mat-divider>
-
-        <h2>Delete Item</h2>
-        <form [formGroup]="deleteProductForm">
-          <mat-form-field appearance="fill">
-            <mat-label>ID</mat-label>
-            <input matInput placeholder="ID" formControlName="id">
-          </mat-form-field>
-            <button class="delete" (click)="deleteItem()" mat-flat-button>Delete Item</button>
-          </form>
-
-    </div>
-  </div>
-
-  <div class="butt-row">
-    <button (click)="getData()" mat-fab extended aria-label="refresh">
-      <mat-icon>refresh</mat-icon>
-      Refresh Data
-    </button>
+        <h2>Bug Reports: <mat-icon matBadge="{{ counterService.counter() }}">bug_report</mat-icon></h2>
+        <span>
+          <button (click)="incrementFromService()" mat-flat-button>Increment Bugs</button>
+        </span>
+        
   </div>
 
   <div class="column right-column">
-      <mat-card *ngFor="let d of data()">
+      <mat-card *ngFor="let item of data()">
         <mat-card-content>
-          <mat-card-subtitle> Name: {{ d.name }}</mat-card-subtitle>
-          <mat-card-subtitle>Price: {{ d.price }}</mat-card-subtitle>
-          <mat-card-subtitle>ID: {{d.id}}</mat-card-subtitle>
+          <button (click)="deleteItem(item.id)" mat-flat-button class="btn-right delete">Delete</button>
+          <mat-card-subtitle> Name: {{ item.name }}</mat-card-subtitle>
+          <mat-card-subtitle>Price: {{ item.price }}</mat-card-subtitle>
+          <mat-card-subtitle>ID: {{ item.id }}</mat-card-subtitle>
         </mat-card-content>
       </mat-card>
   </div>
 </div>
-
-
-
-
-
-        

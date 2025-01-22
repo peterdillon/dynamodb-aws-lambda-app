@@ -1,38 +1,34 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { DynamoDBService } from './dynamoDB.service';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationStart, Router } from '@angular/router';
+import { DynamoDBService, Data } from './services/dynamoDB.service';
+import { CounterService } from './services/counter.service';
 import { LocalStorageService } from './local-storage.service';
 
-import {MatCardModule} from '@angular/material/card';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatDividerModule} from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 
 import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { Amplify } from "aws-amplify";
 import outputs from '../../amplify_outputs.json';
-import { Subscription } from 'rxjs';
 Amplify.configure(outputs);
-
-export interface Data {
-  id: string;
-  name: string;
-  price: string;
-};
 
 @Component({
   selector: 'app-root',
-  imports: [AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  imports: [MatBadgeModule, AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -40,18 +36,19 @@ export interface Data {
 export class AppComponent {
 
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
-  data = signal<Data[]>([]);
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
   authenticated: boolean = false;
   subscription: Subscription;
+  data = signal<Data[]>([]);
   
   constructor( 
     private dbService: DynamoDBService,
     private fb: FormBuilder,
     private router: Router,
+    public counterService: CounterService,
     private localStorageService: LocalStorageService ) {
-
+      
       this.subscription = router.events.subscribe((event) => {
         if (event instanceof NavigationStart) {
           if (!router.navigated) {
@@ -65,7 +62,6 @@ export class AppComponent {
           }
         }
       });
-
 
       Hub.listen('auth', (data) => {
         console.log(data.payload.event);
@@ -102,6 +98,15 @@ export class AppComponent {
         }});
      }
 
+    ngOnInit() {
+      this.initEditForm();
+      this.getData();
+    }
+
+    incrementFromService() {
+      this.counterService.increment()
+    }
+
     saveToLocalStorage(status: string) {
       this.localStorageService.saveData('auth', status);
       if(status === 'signedIn') {
@@ -117,45 +122,27 @@ export class AppComponent {
       return status;
     }
 
-  ngOnInit() {
-    this.initEditForm();
-    this.initDeleteForm();
-   }
-
-   initEditForm() {
-    this.createProductForm = this.fb.group({
-      name: [''],
-      id: [''],
-      price: ['']
-    });
-   }
-
-  saveItem() {
-    this.dbService.saveData(
-      this.createProductForm.get('id')?.value,
-      this.createProductForm.get('price')?.value,
-      this.createProductForm.get('name')?.value
-    );
+  initEditForm() {
+  this.createProductForm = this.fb.group({
+    name: [''],
+    id: [''],
+    price: ['']
+  });
   }
 
-  initDeleteForm() {
-    this.deleteProductForm = this.fb.group({
-      id: ['']
-    });
-   }
+  addEditItem() {
+    this.dbService.addEditItem(this.createProductForm.value)
+      .subscribe(() => this.getData());
+  }
 
-   deleteItem() {
-    this.dbService.deleteData(
-      this.deleteProductForm.get('id')?.value
-    );
-   }
+  deleteItem(id: string) {
+    this.dbService.deleteItem(id)
+      .subscribe(() => this.getData());
+  }
 
   getData() {
     this.dbService.getData()
-    .subscribe(data => { 
-      console.info(data);
-      data = this.data.set(data);
-    });
+      .subscribe(data => this.data.set(data));
   }
 
 }

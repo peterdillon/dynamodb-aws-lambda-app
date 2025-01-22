@@ -36,7 +36,13 @@
               "node_modules/@aws-amplify/ui-angular/theme.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+                "lodash/merge.js",
+                "lodash/kebabCase.js",
+                "lodash/pickBy.js",
+                "qrcode"
+            ]
           },
           "configurations": {
             "production": {
@@ -52,10 +58,28 @@
                   "maximumError": "10kB"
                 }
               ],
-              "outputHashing": "all"
+              "optimization": {
+              "scripts": true,
+              "styles": {
+                "minify": true,
+                "inlineCritical": false
+                },
+              "fonts": true
+            },
+            "outputHashing": "all",
+            "sourceMap": false,
+            "namedChunks": false,
+            "aot": true,
+            "extractLicenses": true,
             },
             "development": {
-              "optimization": false,
+              "optimization": { 
+                "scripts": true, 
+                "styles": { 
+                  "minify": true, 
+                  "inlineCritical": false }, 
+                "fonts": true 
+              },
               "extractLicenses": false,
               "sourceMap": true
             }
