@@ -4,7 +4,8 @@ import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationStart, Router } from '@angular/router';
-import { DynamoDBService, Data } from './dynamoDB.service';
+import { DynamoDBService, Data } from './services/dynamoDB.service';
+import { CounterService } from './services/counter.service';
 import { LocalStorageService } from './local-storage.service';
 
 import { MatCardModule } from '@angular/material/card';
@@ -17,6 +18,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 
 import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
@@ -26,7 +28,7 @@ Amplify.configure(outputs);
 
 @Component({
   selector: 'app-root',
-  imports: [AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  imports: [MatBadgeModule, AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -44,6 +46,7 @@ export class AppComponent {
     private dbService: DynamoDBService,
     private fb: FormBuilder,
     private router: Router,
+    public counterService: CounterService,
     private localStorageService: LocalStorageService ) {
       
       this.subscription = router.events.subscribe((event) => {
@@ -98,6 +101,10 @@ export class AppComponent {
     ngOnInit() {
       this.initEditForm();
       this.getData();
+    }
+
+    incrementFromService() {
+      this.counterService.increment()
     }
 
     saveToLocalStorage(status: string) {

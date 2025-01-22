@@ -1,7 +1,7 @@
 import { Injectable  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Api } from './utils';
+import { Api } from '../utils';
 
 export interface Data {
   id: string;
