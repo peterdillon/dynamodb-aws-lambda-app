@@ -2,11 +2,16 @@ import { Injectable  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Api } from '../utils';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export interface Data {
   id: string;
   name: string;
-  price: string;
+  project: string;
+  description: string;
+  type: string;
+  assigned: string;
 };
 
 @Injectable({
@@ -15,6 +20,11 @@ export interface Data {
 
 export class DynamoDBService {
 
+  uid = "";
+  createGuid() {
+    return this.uid = uuidv4();
+  }
+  
   constructor( private http: HttpClient ) { }
 
   getData(): Observable<any[]> {
@@ -26,7 +36,14 @@ export class DynamoDBService {
   }
 
   addEditItem(formValues: any): Observable<any> {
-    const body = {id: formValues.id, price: formValues.price, name: formValues.name};
+    const myGuid  = this.createGuid();
+    const body = {id: myGuid, 
+      project: formValues.project, 
+      description: formValues.description, 
+      name: formValues.name,
+      type: formValues.type,
+      assigned: formValues.assigned
+    };
     return this.http.put<any>(Api.url, body, Api.httpOptions);
   }
 

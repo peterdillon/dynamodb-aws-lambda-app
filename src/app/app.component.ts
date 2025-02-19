@@ -13,6 +13,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -20,20 +21,36 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 
+import { TextFieldModule } from '@angular/cdk/text-field';
+import { inject, Injector, ViewChild } from '@angular/core';
+
 import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { Amplify } from "aws-amplify";
 import outputs from '../../amplify_outputs.json';
 Amplify.configure(outputs);
 
+interface Developers {
+  value: string;
+  name: string;
+  title: string;
+}
+
+interface Tasks {
+  value: string;
+  type: string;
+}
+
 @Component({
   selector: 'app-root',
-  imports: [MatBadgeModule, AmplifyAuthenticatorModule, MatDividerModule,MatMenuModule,MatGridListModule, MatToolbarModule, MatButtonModule,MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  imports: [MatBadgeModule, MatSelectModule, TextFieldModule, AmplifyAuthenticatorModule, MatDividerModule, MatMenuModule, MatGridListModule, MatToolbarModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 
 export class AppComponent {
+
+  private _injector = inject(Injector);
 
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
   createProductForm!: FormGroup;
@@ -41,6 +58,19 @@ export class AppComponent {
   authenticated: boolean = false;
   subscription: Subscription;
   data = signal<Data[]>([]);
+  developers: Developers[] = [
+    {value: 'Danny', name: 'Danny', title: 'UI Designer'},
+    {value: 'Tara', name: 'Tara', title: 'Backend'},
+    {value: 'Peter', name: 'Peter', title: 'Full Stack'},
+    {value: 'Patrick', name: 'Patrick', title: 'AI Implementation'},
+  ];
+  tasks: Tasks[] = [
+    {value: 'Epic', type: 'Epic'},
+    {value: 'Story', type: 'Story'},
+    {value: 'Bug', type: 'Bug'},
+    {value: 'Subtask', type: 'Subtask'}
+  ];
+
   
   constructor( 
     private dbService: DynamoDBService,
@@ -123,11 +153,17 @@ export class AppComponent {
     }
 
   initEditForm() {
-  this.createProductForm = this.fb.group({
-    name: [''],
-    id: [''],
-    price: ['']
-  });
+    this.createProductForm = this.fb.group({
+      name: [''],
+      project: [''],
+      description: [''],
+      type: ['Epic'],
+      assigned: ['Danny']
+    });
+  }
+
+  compareFn(option1: any, option2: any): boolean {
+    return option1 && option2 ? option1.value === option2.value : option1 === option2;
   }
 
   addEditItem() {
