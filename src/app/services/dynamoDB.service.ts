@@ -36,8 +36,10 @@ export class DynamoDBService {
   }
 
   addEditItem(formValues: any): Observable<any> {
-    const myGuid  = this.createGuid();
-    const body = {id: myGuid, 
+    let myGuid: string;
+    formValues.id ? myGuid = formValues.id : myGuid  = this.createGuid();
+    const body = {
+      id: myGuid, 
       project: formValues.project, 
       description: formValues.description, 
       name: formValues.name,

@@ -57,16 +57,37 @@ h2 mat-icon {
 .column {
     display: flex;
     flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
+    flex: 0 0 30rem;
     padding-left: 1rem;
     h2 {
         margin: 0 0 .5rem .5rem;
+        &.with-counter {
+            margin-top: -1.1rem;
+        }
     }
 }
+
+h3 {
+    margin: 0 !important;
+}
+
+.right-column {
+    flex-grow: 2; 
+}
+
+.input-full-width {
+    width: 95%;
+}
+
+.subhead {
+    font-size: small;
+    color: #888;
+}
+
 .mat-mdc-card {
     margin: 1rem 1.3rem 0 0;
     border: 1px solid #666 !important;
+    border-radius: .5rem !important;
     &:first-of-type {
         margin-top: 0;
     }
@@ -74,6 +95,12 @@ h2 mat-icon {
 .mat-mdc-form-field {
     margin: 0 .5rem;
 }
+
+mat-divider {
+    padding: .5rem 0;
+    margin-top: .5rem;
+}
+
 button {
     margin: .25rem;
 }

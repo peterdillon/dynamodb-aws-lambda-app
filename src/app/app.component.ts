@@ -158,7 +158,8 @@ export class AppComponent {
       project: [''],
       description: [''],
       type: ['Epic'],
-      assigned: ['Danny']
+      assigned: ['Danny'],
+      id: [''],
     });
   }
 
