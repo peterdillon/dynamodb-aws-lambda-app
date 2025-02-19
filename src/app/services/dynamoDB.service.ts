@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { Api } from '../utils';
 import { v4 as uuidv4 } from 'uuid';
 
-
 export interface Data {
   id: string;
   name: string;
@@ -12,7 +11,7 @@ export interface Data {
   description: string;
   type: string;
   assigned: string;
-};
+}
 
 @Injectable({
   providedIn: 'root'
