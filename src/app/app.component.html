@@ -42,22 +42,22 @@
   
         <mat-form-field appearance="fill">
           <mat-label>Name</mat-label>
-          <input matInput placeholder="Name" formControlName="name">
+          <input matInput formControlName="name">
         </mat-form-field>
   
         <mat-form-field appearance="fill">
           <mat-label>Project</mat-label>
-          <input matInput placeholder="Project" formControlName="project">
+          <input matInput formControlName="project">
         </mat-form-field>
         <br>
         <mat-form-field appearance="fill">
           <mat-label>Description</mat-label>
-          <textarea matInput rows="5" cols="49" formControlName="description" placeholder="Description"></textarea>
+          <textarea matInput rows="5" cols="49" formControlName="description"></textarea>
         </mat-form-field>
         <br>
         <mat-form-field>
           <mat-label>Task</mat-label>
-          <mat-select [compareWith]="compareFn" formControlName="type" placeholder="Type">
+          <mat-select [compareWith]="compareFn" formControlName="type">
             @for (task of tasks; track task) {
               <mat-option [value]="task.type">{{task.type}}</mat-option>
             }
@@ -65,7 +65,7 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Assign To</mat-label>
-          <mat-select [compareWith]="compareFn" formControlName="assigned" placeholder="Assigned To">
+          <mat-select [compareWith]="compareFn" formControlName="assigned">
             @for (dev of developers; track dev) {
               <mat-option [value]="dev.name">{{dev.name}}</mat-option>
             }
@@ -74,7 +74,7 @@
 
         <mat-form-field appearance="fill" class="input-full-width">
           <mat-label>ID</mat-label>
-          <input matInput placeholder="id" formControlName="id">
+          <input matInput formControlName="id">
         </mat-form-field>
 
         <br>

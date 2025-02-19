@@ -157,8 +157,8 @@ export class AppComponent {
       name: [''],
       project: [''],
       description: [''],
-      type: ['Epic'],
-      assigned: ['Danny'],
+      type: [''],
+      assigned: [''],
       id: [''],
     });
   }

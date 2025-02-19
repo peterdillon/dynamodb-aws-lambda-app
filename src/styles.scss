@@ -4,6 +4,7 @@ html {
   color-scheme: light dark;
   @include mat.theme((
     color: mat.$cyan-palette,
+    // Change theme with one color choice:
     // red, green, yellow, orange, cyan, magenta, 
     typography: Roboto,
     density: 0
