@@ -20,6 +20,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { inject, Injector, ViewChild } from '@angular/core';
@@ -43,7 +44,7 @@ interface Tasks {
 
 @Component({
   selector: 'app-root',
-  imports: [MatBadgeModule, MatSelectModule, TextFieldModule, AmplifyAuthenticatorModule, MatDividerModule, MatMenuModule, MatGridListModule, MatToolbarModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  imports: [MatBadgeModule, MatCheckboxModule, MatSelectModule, TextFieldModule, AmplifyAuthenticatorModule, MatDividerModule, MatMenuModule, MatGridListModule, MatToolbarModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -131,7 +132,27 @@ export class AppComponent {
     ngOnInit() {
       this.initEditForm();
       this.getData();
+      this.onChanges();
     }
+
+    initEditForm() {
+      this.createProductForm = this.fb.group({
+        name: [''],
+        project: [''],
+        description: [''],
+        type: [''],
+        assigned: [''],
+        id: ['', { disabled: true }],
+        edit: []
+      });
+      this.createProductForm.get('id')?.disable();
+    }
+
+    onChanges(): void {
+      this.createProductForm.get('edit')?.valueChanges.subscribe(res => {
+       res ? this.createProductForm.get('id')?.enable() : this.createProductForm.get('id')?.disable();
+      })
+    };
 
     incrementFromService() {
       this.counterService.increment()
@@ -152,17 +173,6 @@ export class AppComponent {
       return status;
     }
 
-  initEditForm() {
-    this.createProductForm = this.fb.group({
-      name: [''],
-      project: [''],
-      description: [''],
-      type: [''],
-      assigned: [''],
-      id: [''],
-    });
-  }
-
   compareFn(option1: any, option2: any): boolean {
     return option1 && option2 ? option1.value === option2.value : option1 === option2;
   }
@@ -170,11 +180,13 @@ export class AppComponent {
   addEditItem() {
     this.dbService.addEditItem(this.createProductForm.value)
       .subscribe(() => this.getData());
+      this.initEditForm();
   }
 
   deleteItem(id: string) {
     this.dbService.deleteItem(id)
       .subscribe(() => this.getData());
+      this.initEditForm();
   }
 
   getData() {
