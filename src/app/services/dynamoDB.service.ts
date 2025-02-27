@@ -11,6 +11,7 @@ export interface Data {
   description: string;
   type: string;
   assigned: string;
+  createdAt: string;
 }
 
 @Injectable({
@@ -43,8 +44,10 @@ export class DynamoDBService {
       description: formValues.description, 
       name: formValues.name,
       type: formValues.type,
-      assigned: formValues.assigned
+      assigned: formValues.assigned,
+      createdAt: new Date().getTime()
     };
+    console.log(body);
     return this.http.put<any>(Api.url, body, Api.httpOptions);
   }
 

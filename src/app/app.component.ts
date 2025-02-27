@@ -52,7 +52,6 @@ interface Tasks {
 export class AppComponent {
 
   private _injector = inject(Injector);
-
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
@@ -129,53 +128,63 @@ export class AppComponent {
         }});
      }
 
-    ngOnInit() {
-      this.initEditForm();
-      this.getData();
-      this.onChanges();
-    }
+  ngOnInit() {
+    this.initEditForm();
+    this.getData();
+    this.onChanges();
+  }
 
-    initEditForm() {
-      this.createProductForm = this.fb.group({
-        name: [''],
-        project: [''],
-        description: [''],
-        type: [''],
-        assigned: [''],
-        id: ['', { disabled: true }],
-        edit: []
-      });
-      this.createProductForm.get('id')?.disable();
-    }
+  editItem(id:string, name:string, project:string, description:string, type:string, assigned:string) {
+    this.createProductForm.get('id')?.enable();
+    this.createProductForm.patchValue({
+      id: id,
+      name: name,
+      project: project,
+      description: description,
+      type: type,
+      assigned: assigned,
+      edit:true
+    });
+  }
 
-    onChanges(): void {
-      this.createProductForm.get('edit')?.valueChanges.subscribe(res => {
-       res ? this.createProductForm.get('id')?.enable() : this.createProductForm.get('id')?.disable();
-      })
-    };
+  initEditForm() {
+    this.createProductForm = this.fb.group({
+      name: [''],
+      project: ['Bazinga!'],
+      description: [''],
+      type: [],
+      assigned: [],
+      id: ['', { disabled: true }],
+      edit: []
+    });
+    this.createProductForm.get('id')?.disable();
+  }
 
-    incrementFromService() {
-      this.counterService.increment()
-    }
+  onChanges(): void {
+    this.createProductForm.get('edit')?.valueChanges.subscribe(res => {
+      res ? this.createProductForm.get('id')?.enable() : this.createProductForm.get('id')?.disable();
+    })
+  };
 
-    saveToLocalStorage(status: string) {
-      this.localStorageService.saveData('auth', status);
-      if(status === 'signedIn') {
-        this.authenticated = true;
-      }
+  saveToLocalStorage(status: string) {
+    this.localStorageService.saveData('auth', status);
+    if(status === 'signedIn') {
+      this.authenticated = true;
     }
-  
-    retrieveFromLocalStorage() {
-      const status = this.localStorageService.getData('auth');
-      if(status === 'signedOut' || null) {
-        this.authenticated = false;
-      }
-      return status;
+  }
+
+  retrieveFromLocalStorage() {
+    const status = this.localStorageService.getData('auth');
+    if(status === 'signedOut' || null) {
+      this.authenticated = false;
     }
+    return status;
+  }
 
   compareFn(option1: any, option2: any): boolean {
     return option1 && option2 ? option1.value === option2.value : option1 === option2;
   }
+
 
   addEditItem() {
     this.dbService.addEditItem(this.createProductForm.value)
@@ -191,7 +200,11 @@ export class AppComponent {
 
   getData() {
     this.dbService.getData()
-      .subscribe(data => this.data.set(data));
+      .subscribe(data => { 
+        this.data.set(data);
+        console.log(data);
+      });  
+      
   }
 
 }
