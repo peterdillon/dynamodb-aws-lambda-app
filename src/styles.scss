@@ -50,38 +50,58 @@ h2 {
        background-color: rgba(black, 60%);
     }
 }
-
 .icon-color {
     color: black;
 }
 
-.row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-    margin-top: 1rem;;
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    height: 100vh;
   }
-  
-.column {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 30rem;
-    padding-left: 1rem;
+  .left-column {
+    height: 100%;
+    width: 30rem;
+    padding: 0 0 0 1rem;
+  }
+  .right-column {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: 1.25rem;
+    padding: 4rem 1rem 3rem .5rem;
     h2 {
-        margin: 0 0 .5rem .5rem;
-        &.with-counter {
-            margin-top: -1.1rem;
-        }
+        position: absolute;
+        margin-top: -2.8rem;
+    }
+  }
+  h2 {
+    margin-bottom: .5rem;
+  }
+  .content-box {
+    box-sizing: border-box;
+  }
+
+.mat-mdc-card {
+    border: 1px solid #666 !important;
+    border-radius: .5rem !important;
+    background-color: rgba(#ccc, .15) !important;
+    min-height: 25rem;
+    mat-divider {
+        padding: .5rem 0;
+        margin-top: .5rem;
+    }
+    &.left-col-card {
+        height: 43rem;
+        width: 27.5rem;
     }
 }
+.mat-mdc-form-field {
+    margin: 0 .5rem;
+}
+
 
 h3 {
     margin: 0 !important;
-}
-
-.right-column {
-    flex-grow: 2; 
 }
 
 .input-full-width {
@@ -105,7 +125,7 @@ p.ai-section {
 .aws-ai-icon {
     position: absolute;
     z-index: 99;
-    right: .25rem;
+    right: 0;
     top: -2rem;
     border-radius: 10rem;
     height: 4rem;
@@ -114,26 +134,10 @@ p.ai-section {
     background: linear-gradient(45deg, rgba(5,95,78,1) 0%, rgba(86,192,167,1) 100%);
 }
 
-.mat-mdc-card {
-    margin: 1rem 1.3rem 0 0;
-    border: 1px solid #666 !important;
-    border-radius: .5rem !important;
-    background-color: rgba(#ccc, .15) !important;
-    &:first-of-type {
-        margin-top: 0;
-    }
-    mat-divider {
-        padding: .5rem 0;
-        margin-top: .5rem;
-    }
-}
-.mat-mdc-form-field {
-    margin: 0 .5rem;
-}
-
 mat-divider {
     padding: .5rem 0;
     margin-top: .5rem;
+    width: 96.5%;
 }
 
 button {
