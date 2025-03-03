@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Introduction to Generative AI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css">
+</head>
+<body>  
+    <style>
+        body {
+            font-family: monospace !important;
+            margin: 0;
+            padding: 0;
+            background: #131313;
+        }
+        p {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin: 0;
+            padding: 0 0 3rem 0;
+            font-family: sans-serif;
+        }
+        p#typewriter {
+            text-align: left;
+            width: 100%;
+            font-size: .9rem;
+            line-height: 1.4rem;
+            min-height: 22rem;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            border: 1px solid #888;
+            box-sizing: border-box;
+            color: #ccc;
+            background-color: #444;
+            font-family: monospace;
+            border-radius: 3px;
+        }
+        .container {
+            margin: 0;
+            overflow: hidden;
+            background-color: rgba(204,204,204, .15);
+        }
+        #apiForm {
+            padding-bottom: 1rem;
+        }
+        #apiForm, #response {
+            color: #ddd;
+            border-radius: 3px;
+        }
+        #response {
+            overflow: auto;
+            max-height: 23rem;
+        }
+        #apiForm label, #response label {
+            display: block;
+            margin: 5px 0;
+        }
+         #apiForm textarea {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            border: 1px solid #888;
+            box-sizing: border-box;
+            color: #ccc;
+            background-color: #444;
+        }
+        #apiForm textarea:focus {
+            outline: none !important;
+            border: 1px solid #32d6d8;;
+            box-shadow: 0 0 6px #32d6d8;
+        }
+        #apiForm button {
+            padding: .6rem 1.4rem;
+            background: #32d6d8;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        hr {
+            height: 1px;
+            margin: 1rem 0 .5rem 0; 
+            color: #888;
+            background: #888;
+            font-size: 0;
+            border: 0;
+        }
+        /*----------------------------------------------------*/
+        /* Loader styles */
+        .loader {
+            color: white;
+            display: none;
+            position: fixed;
+            margin: 2.3rem auto;
+            width: 80px;
+            left: calc(50% - 40px);
+            z-index: 10;
+        }
+        .loader:before {
+            content: '';
+            display: block;
+            padding-top: 100%;
+        }
+        .circular {
+            animation: rotate 2s linear infinite;
+            height: 100%;
+            transform-origin: center center;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+        .path {
+            stroke-dasharray: 1, 200;
+            stroke-dashoffset: 0;
+            animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+            stroke-linecap: round;
+        }
+        @keyframes rotate {
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+        }
+        @keyframes dash {
+        0% {
+            stroke-dasharray: 1, 200;
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -35px;
+        }
+        100% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -124px;
+        }
+        }
+        @keyframes color {
+            100%, 0% {  stroke: #fff;  }
+            40% {   stroke: yellow; }
+            66% {  stroke: #fff; }
+            80%, 90% { stroke: yellow; }
+        }
+        .pulse {
+        animation: pulse 2.5s ease infinite;
+        }
+        @keyframes pulse {
+            0% {  opacity: .8;  }
+            50% {  opacity: .2;  }
+            100% {  opacity: 8;  }
+        }
+    </style>
+</head>
+<body>
+    <!-- loader -->
+    <div class="loader" id="spinner">
+    <svg class="circular" viewBox="25 25 50 50">
+        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+    </svg>
+    </div>
+    <!-- / loader -->
+
+    <div class="container">
+        <div id="apiForm">
+            <label for="content">Ask a question:</label>
+            <textarea id="content" rows="5"></textarea>
+            <button onclick="callFake()">Generate</button>
+            <!-- onclick="callApi()" -->
+        </div>
+        <div id="response">
+            <p id="typewriter">Running AI chat apps on AWS is very expensive, so I turned it off...</p>
+        </div>
+        <p class="disclaimer">As with all AI-powered applications, outputs should be reviewed for accuracy and appropriateness.</p>
+    </div>
+
+    <script>
+        // Fake stuff
+        runTypeWriter()
+        function callFake() {
+            var ta = document.getElementById('typewriter');
+            ta.textContent = "Stop clicking, I said I turned it off! It was like $100+ for just a few days worth of debugging and I'm in between jobs right now, what the heck? You'll just have to take my word that it worked, OKAY!?!?";
+            runTypeWriter();
+        }
+        // -------------------------------
+        // Add pre, code to generated text
+        function replaceCodeBlocks(text) {
+            let replacementCount = 0;
+            const replacedText = text.replace(/```/g, function(match, codeContent) {
+                replacementCount++;
+                if (replacementCount % 2 === 0 ) {
+                    return "</pre></code>";
+                } else if (replacementCount % 2 === 1) {
+                    return "<pre class='language-javascript'><code class='language-javascript'>";
+                } else {
+                    return match;
+                }
+            });
+            return replacedText;
+        }
+        // Add spinner and thing for ux
+        let spinner = document.getElementById("spinner");
+        var ta = document.getElementById('content');
+
+        function fetching() {
+            spinner.style.display = "block";
+            ta.style.backgroundColor = "#222";
+            ta.style.color = "#666";
+        }
+        function resting() {
+            spinner.style.display = "none";
+            ta.style.backgroundColor = "#444";
+            ta.style.color = "#ccc";
+        }
+        // Run the LLM
+        function callApi() {
+            var apiGatewayUrl = "https://v7wtiryij7.execute-api.us-east-1.amazonaws.com/prod/pets";
+            var content = document.getElementById('content').value;
+            fetching();
+
+            fetch(apiGatewayUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inputs: content, parameters: { 'max_new_tokens': 400} })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+                resting();
+            })
+            .then(data => {
+                if(data && data[0] && data[0].generated_text) {
+                    console.log(data[0].generated_text);
+                    const formatText = replaceCodeBlocks(data[0].generated_text);
+                    document.getElementById('typewriter').textContent = formatText;
+                    runTypeWriter();
+                    resting();
+                } else {
+                    throw new Error('Response is not in the expected format');
+                    resting();
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                resting();
+                alert('An error occurred: ' + error.message);
+            });
+        }
+        // Run typewriter effect
+        function typeTableContent(elements) {
+            const cells = elements.map(element => {
+                const textContent = element.textContent;
+                const placeholder = '<span style="visibility: hidden;">' + textContent + '</span>';
+                element.setAttribute('data-content', textContent);
+                element.innerHTML = placeholder;
+                return element;
+            });
+        function typeContentIntoElement(element, callback) {
+            const content = element.getAttribute('data-content') || '';
+            let text = '';
+            let charIndex = 0;
+            const typingSpeed = 10;
+            function typeChar() {
+                if (charIndex < content.length) {
+                    text += content.charAt(charIndex);
+                    element.innerHTML = text;
+                    charIndex++;
+                    setTimeout(typeChar, typingSpeed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            typeChar();
+        }
+        function typeNextElement(index) {
+            if (index < cells.length) {
+                typeContentIntoElement(cells[index], function() {
+                    typeNextElement(index + 1);
+                });
+            }
+        }
+        typeNextElement(0);
+        }
+        function runTypeWriter() {
+            const textElements = Array.from(document.querySelectorAll('p#typewriter'));
+            if (textElements.length) {
+                typeTableContent(textElements);
+            }
+        }
+    </script>
+</body>
+</html>
