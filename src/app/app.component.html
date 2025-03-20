@@ -35,7 +35,7 @@
   </ng-template>
 </amplify-authenticator>
 
-<div class="grid-container short">
+<div class="grid-container short" *ngIf="authenticated">
   <div class="left-column">
     <div class="backlog-ct">
       <h2>Forecast Types</h2>
@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="right-column short">
-    <canvas id="canvasLine">{{chart3}}</canvas>
+    <canvas [hidden]="authenticated" id="canvasLine">{{chart3}}</canvas>
   </div>
 </div>
 

@@ -23,9 +23,10 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { inject, Injector, ViewChild } from '@angular/core';
+import { ViewChild } from '@angular/core';
 
-import Chart from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
@@ -53,9 +54,10 @@ interface Tasks {
 
 export class AppComponent {
 
-  chart: any = [];
-  chart2: any = [];
-  chart3: any = [];
+  @ViewChild('myChart') private chartRef: ElementRef | undefined;
+  chart3: Chart | undefined;
+  chartInitialized = false;
+
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
@@ -75,12 +77,14 @@ export class AppComponent {
     {value: 'Subtask', type: 'Subtask'}
   ];
 
-  constructor( 
+  constructor(
     private dbService: DynamoDBService,
     private fb: FormBuilder,
     private router: Router,
     public counterService: CounterService,
     private localStorageService: LocalStorageService) {
+
+      Chart.register(...registerables);
       
       this.subscription = router.events.subscribe((event) => {
         if (event instanceof NavigationStart) {
@@ -136,12 +140,28 @@ export class AppComponent {
     this.initEditForm();
     this.getData();
     this.onChanges();
-    this.chartLine();
   }
 
+  ngAfterViewInit() {
+    if (this.authenticated) {
+      this.chartLine();
+    }
+  }
 
+  ngAfterViewChecked() {
+    if (this.authenticated && !this.chartInitialized) {
+      this.chartLine();
+      this.chartInitialized = true;
+    }
+  }
 
   chartLine() {
+
+    if (this.chart3) {
+      console.log('Destroying existing chart');
+      this.chart3.destroy();
+    }
+
     var myChart = new Chart('canvasLine', {
       type: 'bar',
       data: {
