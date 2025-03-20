@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,6 +24,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { inject, Injector, ViewChild } from '@angular/core';
+
+import Chart from 'chart.js/auto';
 
 import { Hub } from 'aws-amplify/utils';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
@@ -51,7 +53,9 @@ interface Tasks {
 
 export class AppComponent {
 
-  private _injector = inject(Injector);
+  chart: any = [];
+  chart2: any = [];
+  chart3: any = [];
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
@@ -71,13 +75,12 @@ export class AppComponent {
     {value: 'Subtask', type: 'Subtask'}
   ];
 
-  
   constructor( 
     private dbService: DynamoDBService,
     private fb: FormBuilder,
     private router: Router,
     public counterService: CounterService,
-    private localStorageService: LocalStorageService ) {
+    private localStorageService: LocalStorageService) {
       
       this.subscription = router.events.subscribe((event) => {
         if (event instanceof NavigationStart) {
@@ -129,12 +132,55 @@ export class AppComponent {
             break;
         }});
      }
-
   ngOnInit() {
     this.initEditForm();
     this.getData();
     this.onChanges();
+    this.chartLine();
   }
+
+
+
+  chartLine() {
+    var myChart = new Chart('canvasLine', {
+      type: 'bar',
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug","Sep"],
+        datasets: [{ 
+            data: [8,4,1,1,2,8.8,5,7,1,6,9,3],
+            label: "Subtasks",
+            borderColor: "aquamarine",
+            backgroundColor: "rgb(127, 255, 212, .6)",
+            // fill: false,
+          }, { 
+            data: [5,9,2,1,9,4,6,8.8,5,7,2,4],
+            label: "Stories",
+            borderColor: "BlueViolet",
+            backgroundColor: "rgb(138, 43, 226, .6)",
+            // fill: false,
+          }, { 
+            data: [1,8,5,7,2,9,4,7,5,9,1,8],
+            label: "Epic",
+            borderColor: "orange",
+            backgroundColor: "rgba(255, 165, 0, .6)",
+            // fill: false,
+          }, { 
+            data: [3,7,8,7,5,9,1,8,7,5,9,1],
+            label: "Bug",
+            borderColor: "pink",
+            backgroundColor: "rgb(255, 105, 180, .6)",
+            // fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  }
+
+ 
 
   editItem(id:string, name:string, project:string, description:string, type:string, assigned:string) {
     this.createProductForm.get('id')?.enable();
