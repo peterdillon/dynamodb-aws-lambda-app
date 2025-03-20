@@ -95,9 +95,11 @@ export class AppComponent {
 
       Hub.listen('auth', (data) => {
         console.log(data.payload.event);
-        if (data.payload.event === 'signedIn') {
+        if (data.payload.event === 'signedIn' || data.payload.event === 'tokenRefresh') {
           this.authenticated = true;
         } else if(data.payload.event === 'signedOut') {
+          this.authenticated = false;
+        } else {
           this.authenticated = false;
         }
         switch (data.payload.event) {
