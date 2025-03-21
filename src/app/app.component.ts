@@ -54,7 +54,6 @@ interface Tasks {
 
 export class AppComponent {
 
-  @ViewChild('myChart') private chartRef: ElementRef | undefined;
   chart3: Chart | undefined;
   chartInitialized = false;
 
@@ -145,14 +144,6 @@ export class AppComponent {
     this.onChanges();
   }
 
-  
-
-  ngAfterViewInit() {
-    if (this.authenticated) {
-      this.initChart();
-    }
-  }
-
   ngAfterViewChecked() {
     if (this.authenticated && !this.chartInitialized) {
       this.initChart();
@@ -179,8 +170,8 @@ export class AppComponent {
           }, { 
             data: [5,9,2,1,9,4,6,8.8,5,7,2,4],
             label: "Stories",
-            borderColor: "BlueViolet",
-            backgroundColor: "rgb(138, 43, 226, .6)",
+            borderColor: "cornflowerblue",
+            backgroundColor: "rgb(100, 149, 237, .6)",
             // fill: false,
           }, { 
             data: [1,8,5,7,2,9,4,7,5,9,1,8],
@@ -203,8 +194,6 @@ export class AppComponent {
       }
     });
   }
-
- 
 
   editItem(id:string, name:string, project:string, description:string, type:string, assigned:string) {
     this.createProductForm.get('id')?.enable();
@@ -244,7 +233,6 @@ export class AppComponent {
       this.authenticated = true;
     }
   }
-
   retrieveFromLocalStorage() {
     const status = this.localStorageService.getData('auth');
     if(status === 'signedOut' || null) {
@@ -256,7 +244,6 @@ export class AppComponent {
   compareFn(option1: any, option2: any): boolean {
     return option1 && option2 ? option1.value === option2.value : option1 === option2;
   }
-
 
   addEditItem() {
     this.dbService.addEditItem(this.createProductForm.value)
