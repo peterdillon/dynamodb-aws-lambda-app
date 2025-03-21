@@ -114,6 +114,9 @@ export class AppComponent {
             console.log('user has been signedIn');
             this.saveToLocalStorage(data.payload.event);
             this.getData();
+            setTimeout(() => {
+              this.initChart();
+            }, 0);
             break;
           case 'signedOut':
             this.saveToLocalStorage(data.payload.event);
@@ -142,27 +145,28 @@ export class AppComponent {
     this.onChanges();
   }
 
+  
+
   ngAfterViewInit() {
     if (this.authenticated) {
-      this.chartLine();
+      this.initChart();
     }
   }
 
   ngAfterViewChecked() {
     if (this.authenticated && !this.chartInitialized) {
-      this.chartLine();
+      this.initChart();
       this.chartInitialized = true;
     }
   }
 
-  chartLine() {
-
+  initChart() {
     if (this.chart3) {
       console.log('Destroying existing chart');
       this.chart3.destroy();
     }
 
-    var myChart = new Chart('canvasLine', {
+    this.chart3 = new Chart('canvasLine', {
       type: 'bar',
       data: {
         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug","Sep"],
