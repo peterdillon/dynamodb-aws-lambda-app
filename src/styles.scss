@@ -162,6 +162,16 @@ mat-divider {
     width: 96.5%;
 }
 
+.animateIt {
+    animation: opacityAnimation .75s ease 2;
+    animation-delay: .25s;
+}
+@keyframes opacityAnimation {
+    0%   { opacity: 1; }
+    50%  { opacity: .1; } 
+    100% { opacity: 1; } 
+}
+
 button {
     transform: scale(0.85);
 }

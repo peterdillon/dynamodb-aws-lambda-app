@@ -60,7 +60,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input matInput formControlName="name">
+        <input #inputName matInput formControlName="name">
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -127,26 +127,28 @@
       </mat-card>
     </div>
   </div>
+
   <div class="right-column">
     <h2>Bug Reports: <mat-icon class="bug-icon" matBadge="{{ data().length}}">bug_report</mat-icon></h2>
-    <div *ngFor="let item of data()" class="content-box">
-      <mat-card>
-        <mat-card-content>
-          <button (click)="deleteItem(item.id)" mat-flat-button class="btn-right delete">Delete</button>
-          <button (click)="editItem(item.id, item.name, item.project, item.description, item.type, item.assigned)" mat-flat-button class="btn-right">Edit</button>
-          <h3>{{ item.name }}</h3>
-          <mat-card-subtitle>Project: {{ item.project }}</mat-card-subtitle>
-          <p><span class="subhead">Description:</span> <br> {{ item.description }}</p>
-          <mat-card-subtitle>Type: {{ item.type }}</mat-card-subtitle>
-          <mat-card-subtitle>Assigned To: {{ item.assigned }}</mat-card-subtitle>
-          <mat-divider></mat-divider>
-          <mat-card-subtitle>ID: {{ item.id }}</mat-card-subtitle>
-          <mat-card-subtitle>Last Edited: {{ item.createdAt | date }}</mat-card-subtitle>
-        </mat-card-content>
-      </mat-card>
+      <div *ngFor="let item of sortedData()" class="content-box" id="_{{ item.id }}" [ngClass]="{'animateIt': editedItemId() === item.id}">
+        <mat-card>
+          <mat-card-content>
+            <button (click)="deleteItem(item.id)" mat-flat-button class="btn-right delete">Delete</button>
+            <button (click)="editItem(item.id, item.name, item.project, item.description, item.type, item.assigned)" mat-flat-button class="btn-right">Edit</button>
+            <h3>{{ item.name }}</h3>
+            <mat-card-subtitle>Project: {{ item.project }}</mat-card-subtitle>
+            <p><span class="subhead">Description:</span> <br> {{ item.description }}</p>
+            <mat-card-subtitle>Type: {{ item.type }}</mat-card-subtitle>
+            <mat-card-subtitle>Assigned To: {{ item.assigned }}</mat-card-subtitle>
+            <mat-divider></mat-divider>
+            <mat-card-subtitle>ID: {{ item.id }}</mat-card-subtitle>
+            <mat-card-subtitle>Last Edited: {{ item.createdAt | date }}</mat-card-subtitle>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   </div>
-</div>
+
 
 
 

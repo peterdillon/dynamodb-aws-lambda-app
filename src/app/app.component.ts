@@ -1,11 +1,10 @@
-import { Component, signal, ElementRef } from '@angular/core';
+import { Component, signal, ElementRef, Renderer2, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationStart, Router } from '@angular/router';
 import { DynamoDBService, Data } from './services/dynamoDB.service';
-import { CounterService } from './services/counter.service';
 import { LocalStorageService } from './local-storage.service';
 
 import { MatCardModule } from '@angular/material/card';
@@ -21,6 +20,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { ViewChild } from '@angular/core';
@@ -33,6 +34,11 @@ import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { Amplify } from "aws-amplify";
 import outputs from '../../amplify_outputs.json';
 Amplify.configure(outputs);
+
+interface Item {
+  name: string;
+  date: string;
+}
 
 interface Developers {
   value: string;
@@ -47,22 +53,26 @@ interface Tasks {
 
 @Component({
   selector: 'app-root',
-  imports: [MatBadgeModule, MatCheckboxModule, MatSelectModule, TextFieldModule, AmplifyAuthenticatorModule, MatDividerModule, MatMenuModule, MatGridListModule, MatToolbarModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
+  standalone: true,
+  imports: [MatTableModule, MatSortModule, MatBadgeModule, MatCheckboxModule, MatSelectModule, TextFieldModule, AmplifyAuthenticatorModule, MatDividerModule, MatMenuModule, MatGridListModule, MatToolbarModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, ReactiveFormsModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 
 export class AppComponent {
 
-  chart3: Chart | undefined;
-  chartInitialized = false;
-
   title = 'Amplify, Angular, Api Gateway, Cognito, DynamoDB, Lambda';
+  @ViewChild('inputName') inputName!: ElementRef;
+  chart3: Chart | undefined;
+  private sortConfig = signal<Sort | null>(null);
+  public editedItemId = signal<string | null>(null);
+  data = signal<Data[]>([]);
+  chartInitialized = false;
+  addedItemClass = false;
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
   authenticated: boolean = false;
   subscription: Subscription;
-  data = signal<Data[]>([]);
   developers: Developers[] = [
     {value: 'Danny', name: 'Danny', title: 'UI Designer'},
     {value: 'Tara', name: 'Tara', title: 'Backend'},
@@ -75,12 +85,13 @@ export class AppComponent {
     {value: 'Bug', type: 'Bug'},
     {value: 'Subtask', type: 'Subtask'}
   ];
-
+  
   constructor(
     private dbService: DynamoDBService,
     private fb: FormBuilder,
     private router: Router,
-    public counterService: CounterService,
+    private renderer: Renderer2,
+    private elementRef: ElementRef,
     private localStorageService: LocalStorageService) {
 
       Chart.register(...registerables);
@@ -138,10 +149,36 @@ export class AppComponent {
             break;
         }});
      }
+     
   ngOnInit() {
     this.initEditForm();
     this.getData();
     this.onChanges();
+    this.sortData({ active: 'createdAt', direction: 'asc' } as Sort);
+  }
+ 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.initChart();
+    }, 0);
+  }
+
+  public sortedData = computed(() => {
+    const data = this.data();
+    const sortConfig = this.sortConfig();
+    if (!data.length || !sortConfig || !sortConfig.active || !sortConfig.direction) {
+      return data;
+    }
+    const direction = sortConfig.direction === 'desc' ? 1 : -1;
+    return data.slice().sort((a, b) => {
+      const valueA = new Date(a[sortConfig.active as keyof Data]).getTime();
+      const valueB = new Date(b[sortConfig.active as keyof Data]).getTime();
+      return direction * (valueA - valueB);
+    });
+  });
+
+  sortData(sort: Sort) {
+    this.sortConfig.set(sort);
   }
 
   ngAfterViewChecked() {
@@ -156,7 +193,6 @@ export class AppComponent {
       console.log('Destroying existing chart');
       this.chart3.destroy();
     }
-
     this.chart3 = new Chart('canvasLine', {
       type: 'bar',
       data: {
@@ -164,8 +200,8 @@ export class AppComponent {
         datasets: [{ 
             data: [8,4,1,1,2,8.8,5,7,1,6,9,3],
             label: "Subtasks",
-            borderColor: "aquamarine",
-            backgroundColor: "rgb(127, 255, 212, .6)",
+            borderColor: "rgb(0, 221, 221, .7)",
+            backgroundColor: "rgb(0, 221, 221, .7)",
             // fill: false,
           }, { 
             data: [5,9,2,1,9,4,6,8.8,5,7,2,4],
@@ -206,6 +242,7 @@ export class AppComponent {
       assigned: assigned,
       edit:true
     });
+    this.inputName.nativeElement.focus();
   }
 
   initEditForm() {
@@ -246,8 +283,15 @@ export class AppComponent {
   }
 
   addEditItem() {
+    const itemId = this.createProductForm.get('id')?.value;
+    this.editedItemId.set(itemId);
+    setTimeout(() => {
+      this.editedItemId.set(null);
+    }, 2500); 
     this.dbService.addEditItem(this.createProductForm.value)
-      .subscribe(() => this.getData());
+      .subscribe(() => {
+        this.getData()
+      });
       this.initEditForm();
   }
 
@@ -261,9 +305,6 @@ export class AppComponent {
     this.dbService.getData()
       .subscribe(data => { 
         this.data.set(data);
-        console.log(data);
-      });  
-      
+      });
   }
-
 }
