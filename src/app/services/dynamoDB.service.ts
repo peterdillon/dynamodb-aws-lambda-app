@@ -47,7 +47,6 @@ export class DynamoDBService {
       assigned: formValues.assigned,
       createdAt: new Date().getTime()
     };
-    console.log(new Date().getTime());
     return this.http.put<any>(Api.url, body, Api.httpOptions);
   }
 

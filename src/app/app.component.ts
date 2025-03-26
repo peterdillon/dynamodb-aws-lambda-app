@@ -1,4 +1,4 @@
-import { Component, signal, ElementRef, Renderer2, computed, effect } from '@angular/core';
+import { Component, signal, ElementRef, Renderer2, computed, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationStart, Router } from '@angular/router';
 import { DynamoDBService, Data } from './services/dynamoDB.service';
 import { LocalStorageService } from './local-storage.service';
+import { Developers, Tasks  } from './interfaces';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -22,9 +23,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { ViewChild } from '@angular/core';
 
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
@@ -34,22 +33,6 @@ import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { Amplify } from "aws-amplify";
 import outputs from '../../amplify_outputs.json';
 Amplify.configure(outputs);
-
-interface Item {
-  name: string;
-  date: string;
-}
-
-interface Developers {
-  value: string;
-  name: string;
-  title: string;
-}
-
-interface Tasks {
-  value: string;
-  type: string;
-}
 
 @Component({
   selector: 'app-root',
@@ -65,10 +48,9 @@ export class AppComponent {
   @ViewChild('inputName') inputName!: ElementRef;
   chart3: Chart | undefined;
   private sortConfig = signal<Sort | null>(null);
-  public editedItemId = signal<string | null>(null);
+  editedItemId = signal<string | null>(null);
   data = signal<Data[]>([]);
   chartInitialized = false;
-  addedItemClass = false;
   createProductForm!: FormGroup;
   deleteProductForm!: FormGroup;
   authenticated: boolean = false;
@@ -261,7 +243,7 @@ export class AppComponent {
   onChanges(): void {
     this.createProductForm.get('edit')?.valueChanges.subscribe(res => {
       res ? this.createProductForm.get('id')?.enable() : this.createProductForm.get('id')?.disable();
-    })
+    });
   };
 
   saveToLocalStorage(status: string) {
@@ -284,15 +266,15 @@ export class AppComponent {
 
   addEditItem() {
     const itemId = this.createProductForm.get('id')?.value;
-    this.editedItemId.set(itemId);
-    setTimeout(() => {
-      this.editedItemId.set(null);
-    }, 2500); 
     this.dbService.addEditItem(this.createProductForm.value)
       .subscribe(() => {
-        this.getData()
+        this.getData();
+        this.editedItemId.set(itemId);
       });
       this.initEditForm();
+      setTimeout(() => {
+        this.editedItemId.set(null);
+      }, 2500); 
   }
 
   deleteItem(id: string) {

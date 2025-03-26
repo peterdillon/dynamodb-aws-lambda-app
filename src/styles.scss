@@ -62,7 +62,7 @@ h2 {
         height: 10rem;
     }
   }
-  .left-column {
+.left-column {
     height: 100%;
     width: 30rem;
     padding: 0 0 0 1rem;
@@ -81,8 +81,8 @@ h2 {
             font-size: 12px;
         }
     }
-  }
-  .right-column {
+}
+.right-column {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
     gap: 1.25rem;
@@ -95,13 +95,13 @@ h2 {
         height: 10rem;
         padding: 0 1rem 0 .5rem;
     }
-  }
-  h2 {
+}
+h2 {
     margin-bottom: .5rem;
-  }
-  .content-box {
+}
+.content-box {
     box-sizing: border-box;
-  }
+}
 
 .mat-mdc-card {
     border: 1px solid #666 !important;
